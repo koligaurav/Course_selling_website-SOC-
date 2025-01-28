@@ -1,1 +1,2 @@
-# Course_selling_website-SOC-
+# Course Selling Website 
+ - deployment on the vercel app link: https://courseapp-xi.vercel.app/
