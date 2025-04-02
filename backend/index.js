@@ -12,10 +12,10 @@ import cors from "cors";
 import fileUpload from "express-fileupload";
 import cookieParser from "cookie-parser";
 
-const app = express();
 dotenv.config();
+const app = express();
 
-//middleware
+// Middleware
 app.use(express.json());
 app.use(cookieParser());
 app.use(
@@ -24,38 +24,48 @@ app.use(
     tempFileDir: "/tmp/",
   })
 );
+
+// CORS Middleware (Fix for Origin Mismatch)
+const allowedOrigins = [
+  "https://course-selling-website-soc-cg6x.vercel.app",
+  "https://course-selling-website-soc-cg6x.vercel.app/"
+];
+
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
+    origin: allowedOrigins,
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
-const port = process.env.PORT || 3000;
-const DB_URI = process.env.MONGO_URI;
+// MongoDB Connection (Fixed await issue)
+const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log("✅ Connected to MongoDB");
+  } catch (error) {
+    console.error("❌ MongoDB Connection Error:", error);
+    process.exit(1); // Exit on failure
+  }
+};
+connectDB();
 
-try {
-  await mongoose.connect(DB_URI);
-  console.log("Connected to MongoDB");
-} catch (error) {
-  console.log(error);
-}
-
-// defining routes
-app.use("/api/v1/course", courseRoute);
-app.use("/api/v1/user", userRoute);
-app.use("/api/v1/admin", adminRoute);
-app.use("/api/v1/order", orderRoute);
-
-// Cloudinary configuration code
+// Cloudinary Configuration
 cloudinary.config({
   cloud_name: process.env.cloud_name,
   api_key: process.env.api_key,
   api_secret: process.env.api_secret,
 });
 
+// Routes
+app.use("/api/v1/course", courseRoute);
+app.use("/api/v1/user", userRoute);
+app.use("/api/v1/admin", adminRoute);
+app.use("/api/v1/order", orderRoute);
+
+const port = process.env.PORT || 5000;
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+  console.log(`🚀 Server is running on port ${port}`);
 });
