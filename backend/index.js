@@ -44,6 +44,10 @@ try {
 }
 
 // defining routes
+app.get("/", (req, res) => {
+  res.json({ message: "API is working!" });
+});
+
 app.use("/api/v1/course", courseRoute);
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/admin", adminRoute);
