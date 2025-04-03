@@ -26,12 +26,24 @@ app.use(
 );
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
+    origin: (origin, callback) => {
+      console.log("Incoming request from:", origin);
+      const allowedOrigins = [
+        "https://course-selling-website-soc-ivof.vercel.app",
+        "http://localhost:3000", // Allow local dev
+      ];
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
 
 const port = process.env.PORT || 3000;
 const DB_URI = process.env.MONGO_URI;
